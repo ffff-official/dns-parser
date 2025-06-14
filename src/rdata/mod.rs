@@ -25,6 +25,7 @@ pub mod soa;
 pub mod srv;
 pub mod txt;
 pub mod wks;
+pub mod svc;
 
 use {Type, Error};
 
@@ -39,6 +40,7 @@ pub use self::ptr::Record as Ptr;
 pub use self::soa::Record as Soa;
 pub use self::srv::Record as Srv;
 pub use self::txt::Record as Txt;
+pub use self::svc::Record as Svc;
 
 pub type RDataResult<'a> = Result<RData<'a>, Error>;
 
@@ -54,6 +56,7 @@ pub enum RData<'a> {
     SOA(Soa<'a>),
     SRV(Srv<'a>),
     TXT(Txt<'a>),
+    SVC(Svc<'a>),
     /// Anything that can't be parsed yet
     Unknown(Type, &'a [u8]),
 }
@@ -77,6 +80,7 @@ impl<'a> RData<'a> {
             Type::SOA       => Soa::parse(rdata, original),
             Type::SRV       => Srv::parse(rdata, original),
             Type::TXT       => Txt::parse(rdata, original),
+            Type::SVC       => Svc::parse(rdata, original),
             _               => Ok(RData::Unknown(typ, rdata)),
         }
     }
@@ -95,6 +99,7 @@ impl<'a> RData<'a> {
             RData::SOA(..)       => Type::SOA,
             RData::SRV(..)       => Type::SRV,
             RData::TXT(..)       => Type::TXT,
+            RData::SVC(..)       => Type::SVC,
             RData::Unknown(t, _) => t,
         }
     }

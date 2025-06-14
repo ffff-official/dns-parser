@@ -1,6 +1,6 @@
-use {Error};
 use rdata::Record;
 use rdata::*;
+use Error;
 
 /// The TYPE value according to RFC 1035
 ///
@@ -45,6 +45,8 @@ pub enum Type {
     OPT = opt::Record::TYPE,
     /// next secure record (RFC 4034, RFC 6762)
     NSEC = nsec::Record::TYPE,
+    ///
+    SVC = svc::Record::TYPE,
 }
 
 /// The QTYPE value according to RFC 1035
@@ -93,10 +95,11 @@ pub enum QueryType {
     MAILB = mailb::Record::TYPE,
     /// A request for mail agent RRs (Obsolete - see MX)
     MAILA = maila::Record::TYPE,
+    ///
+    SVC = svc::Record::TYPE,
     /// A request for all records
     All = all::Record::TYPE,
 }
-
 
 /// The CLASS value according to RFC 1035
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -183,14 +186,14 @@ impl From<u8> for ResponseCode {
     fn from(code: u8) -> ResponseCode {
         use self::ResponseCode::*;
         match code {
-            0       => NoError,
-            1       => FormatError,
-            2       => ServerFailure,
-            3       => NameError,
-            4       => NotImplemented,
-            5       => Refused,
-            6...15  => Reserved(code),
-            x       => panic!("Invalid response code {}", x),
+            0 => NoError,
+            1 => FormatError,
+            2 => ServerFailure,
+            3 => NameError,
+            4 => NotImplemented,
+            5 => Refused,
+            6...15 => Reserved(code),
+            x => panic!("Invalid response code {}", x),
         }
     }
 }
@@ -198,13 +201,13 @@ impl Into<u8> for ResponseCode {
     fn into(self) -> u8 {
         use self::ResponseCode::*;
         match self {
-            NoError         => 0,
-            FormatError     => 1,
-            ServerFailure   => 2,
-            NameError       => 3,
-            NotImplemented  => 4,
-            Refused         => 5,
-            Reserved(code)  => code,
+            NoError => 0,
+            FormatError => 1,
+            ServerFailure => 2,
+            NameError => 3,
+            NotImplemented => 4,
+            Refused => 5,
+            Reserved(code) => code,
         }
     }
 }
@@ -214,28 +217,29 @@ impl QueryType {
     pub fn parse(code: u16) -> Result<QueryType, Error> {
         use self::QueryType::*;
         match code as isize {
-            a::Record::TYPE         => Ok(A),
-            ns::Record::TYPE        => Ok(NS),
-            mf::Record::TYPE        => Ok(MF),
-            cname::Record::TYPE     => Ok(CNAME),
-            soa::Record::TYPE       => Ok(SOA),
-            mb::Record::TYPE        => Ok(MB),
-            mg::Record::TYPE        => Ok(MG),
-            mr::Record::TYPE        => Ok(MR),
-            null::Record::TYPE      => Ok(NULL),
-            wks::Record::TYPE       => Ok(WKS),
-            ptr::Record::TYPE       => Ok(PTR),
-            hinfo::Record::TYPE     => Ok(HINFO),
-            minfo::Record::TYPE     => Ok(MINFO),
-            mx::Record::TYPE        => Ok(MX),
-            txt::Record::TYPE       => Ok(TXT),
-            aaaa::Record::TYPE      => Ok(AAAA),
-            srv::Record::TYPE       => Ok(SRV),
-            axfr::Record::TYPE      => Ok(AXFR),
-            mailb::Record::TYPE     => Ok(MAILB),
-            maila::Record::TYPE     => Ok(MAILA),
-            all::Record::TYPE       => Ok(All),
-            x               => Err(Error::InvalidQueryType(x as u16)),
+            a::Record::TYPE => Ok(A),
+            ns::Record::TYPE => Ok(NS),
+            mf::Record::TYPE => Ok(MF),
+            cname::Record::TYPE => Ok(CNAME),
+            soa::Record::TYPE => Ok(SOA),
+            mb::Record::TYPE => Ok(MB),
+            mg::Record::TYPE => Ok(MG),
+            mr::Record::TYPE => Ok(MR),
+            null::Record::TYPE => Ok(NULL),
+            wks::Record::TYPE => Ok(WKS),
+            ptr::Record::TYPE => Ok(PTR),
+            hinfo::Record::TYPE => Ok(HINFO),
+            minfo::Record::TYPE => Ok(MINFO),
+            mx::Record::TYPE => Ok(MX),
+            txt::Record::TYPE => Ok(TXT),
+            aaaa::Record::TYPE => Ok(AAAA),
+            srv::Record::TYPE => Ok(SRV),
+            axfr::Record::TYPE => Ok(AXFR),
+            mailb::Record::TYPE => Ok(MAILB),
+            maila::Record::TYPE => Ok(MAILA),
+            svc::Record::TYPE => Ok(SVC),
+            all::Record::TYPE => Ok(All),
+            x => Err(Error::InvalidQueryType(x as u16)),
         }
     }
 }
@@ -245,12 +249,12 @@ impl QueryClass {
     pub fn parse(code: u16) -> Result<QueryClass, Error> {
         use self::QueryClass::*;
         match code {
-            1   => Ok(IN),
-            2   => Ok(CS),
-            3   => Ok(CH),
-            4   => Ok(HS),
+            1 => Ok(IN),
+            2 => Ok(CS),
+            3 => Ok(CH),
+            4 => Ok(HS),
             255 => Ok(Any),
-            x   => Err(Error::InvalidQueryClass(x)),
+            x => Err(Error::InvalidQueryClass(x)),
         }
     }
 }
@@ -260,26 +264,27 @@ impl Type {
     pub fn parse(code: u16) -> Result<Type, Error> {
         use self::Type::*;
         match code as isize {
-            a::Record::TYPE         => Ok(A),
-            ns::Record::TYPE        => Ok(NS),
-            mf::Record::TYPE        => Ok(MF),
-            cname::Record::TYPE     => Ok(CNAME),
-            soa::Record::TYPE       => Ok(SOA),
-            mb::Record::TYPE        => Ok(MB),
-            mg::Record::TYPE        => Ok(MG),
-            mr::Record::TYPE        => Ok(MR),
-            null::Record::TYPE      => Ok(NULL),
-            wks::Record::TYPE       => Ok(WKS),
-            ptr::Record::TYPE       => Ok(PTR),
-            hinfo::Record::TYPE     => Ok(HINFO),
-            minfo::Record::TYPE     => Ok(MINFO),
-            mx::Record::TYPE        => Ok(MX),
-            txt::Record::TYPE       => Ok(TXT),
-            aaaa::Record::TYPE      => Ok(AAAA),
-            srv::Record::TYPE       => Ok(SRV),
-            opt::Record::TYPE       => Ok(OPT),
-            nsec::Record::TYPE      => Ok(NSEC),
-            x               => Err(Error::InvalidType(x as u16)),
+            a::Record::TYPE => Ok(A),
+            ns::Record::TYPE => Ok(NS),
+            mf::Record::TYPE => Ok(MF),
+            cname::Record::TYPE => Ok(CNAME),
+            soa::Record::TYPE => Ok(SOA),
+            mb::Record::TYPE => Ok(MB),
+            mg::Record::TYPE => Ok(MG),
+            mr::Record::TYPE => Ok(MR),
+            null::Record::TYPE => Ok(NULL),
+            wks::Record::TYPE => Ok(WKS),
+            ptr::Record::TYPE => Ok(PTR),
+            hinfo::Record::TYPE => Ok(HINFO),
+            minfo::Record::TYPE => Ok(MINFO),
+            mx::Record::TYPE => Ok(MX),
+            txt::Record::TYPE => Ok(TXT),
+            aaaa::Record::TYPE => Ok(AAAA),
+            srv::Record::TYPE => Ok(SRV),
+            opt::Record::TYPE => Ok(OPT),
+            nsec::Record::TYPE => Ok(NSEC),
+            svc::Record::TYPE => Ok(SVC),
+            x => Err(Error::InvalidType(x as u16)),
         }
     }
 }
@@ -289,11 +294,11 @@ impl Class {
     pub fn parse(code: u16) -> Result<Class, Error> {
         use self::Class::*;
         match code {
-            1   => Ok(IN),
-            2   => Ok(CS),
-            3   => Ok(CH),
-            4   => Ok(HS),
-            x   => Err(Error::InvalidClass(x)),
+            1 => Ok(IN),
+            2 => Ok(CS),
+            3 => Ok(CH),
+            4 => Ok(HS),
+            x => Err(Error::InvalidClass(x)),
         }
     }
 }
