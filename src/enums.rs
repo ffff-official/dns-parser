@@ -15,6 +15,8 @@ pub enum Type {
     MF = mf::Record::TYPE,
     /// the canonical name for an alias
     CNAME = cname::Record::TYPE,
+    ///
+    DNAME = dname::Record::TYPE,
     /// marks the start of a zone of authority
     SOA = soa::Record::TYPE,
     /// a mailbox domain name (EXPERIMENTAL)
@@ -268,6 +270,7 @@ impl Type {
             ns::Record::TYPE => Ok(NS),
             mf::Record::TYPE => Ok(MF),
             cname::Record::TYPE => Ok(CNAME),
+            dname::Record::TYPE => Ok(DNAME),
             soa::Record::TYPE => Ok(SOA),
             mb::Record::TYPE => Ok(MB),
             mg::Record::TYPE => Ok(MG),

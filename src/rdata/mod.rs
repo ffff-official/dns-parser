@@ -7,6 +7,7 @@ pub mod aaaa;
 pub mod all;
 pub mod axfr;
 pub mod cname;
+pub mod dname;
 pub mod hinfo;
 pub mod maila;
 pub mod mailb;
@@ -32,6 +33,7 @@ use {Type, Error};
 pub use self::a::Record as A;
 pub use self::aaaa::Record as Aaaa;
 pub use self::cname::Record as Cname;
+pub use self::dname::Record as Dname;
 pub use self::mx::Record as Mx;
 pub use self::ns::Record as Ns;
 pub use self::nsec::Record as Nsec;
@@ -50,6 +52,7 @@ pub enum RData<'a> {
     A(A),
     AAAA(Aaaa),
     CNAME(Cname<'a>),
+    DNAME(Dname<'a>),
     MX(Mx<'a>),
     NS(Ns<'a>),
     PTR(Ptr<'a>),
@@ -74,6 +77,7 @@ impl<'a> RData<'a> {
             Type::A         => A::parse(rdata, original),
             Type::AAAA      => Aaaa::parse(rdata, original),
             Type::CNAME     => Cname::parse(rdata, original),
+            Type::DNAME     => Dname::parse(rdata, original),
             Type::NS        => Ns::parse(rdata, original),
             Type::MX        => Mx::parse(rdata, original),
             Type::PTR       => Ptr::parse(rdata, original),
@@ -93,6 +97,7 @@ impl<'a> RData<'a> {
             RData::A(..)         => Type::A,
             RData::AAAA(..)      => Type::AAAA,
             RData::CNAME(..)     => Type::CNAME,
+            RData::DNAME(..)     => Type::DNAME,
             RData::NS(..)        => Type::NS,
             RData::MX(..)        => Type::MX,
             RData::PTR(..)       => Type::PTR,
