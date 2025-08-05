@@ -24,11 +24,11 @@ pub mod opt;
 pub mod ptr;
 pub mod soa;
 pub mod srv;
+pub mod svc;
 pub mod txt;
 pub mod wks;
-pub mod svc;
 
-use {Type, Error};
+use {Error, Type};
 
 pub use self::a::Record as A;
 pub use self::aaaa::Record as Aaaa;
@@ -41,13 +41,13 @@ pub use self::opt::Record as Opt;
 pub use self::ptr::Record as Ptr;
 pub use self::soa::Record as Soa;
 pub use self::srv::Record as Srv;
-pub use self::txt::Record as Txt;
 pub use self::svc::Record as Svc;
+pub use self::txt::Record as Txt;
 
 pub type RDataResult<'a> = Result<RData<'a>, Error>;
 
 /// The enumeration that represents known types of DNS resource records data
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum RData<'a> {
     A(A),
     AAAA(Aaaa),
@@ -64,7 +64,7 @@ pub enum RData<'a> {
     Unknown(Type, &'a [u8]),
 }
 
-pub (crate) trait Record<'a> {
+pub(crate) trait Record<'a> {
     const TYPE: isize;
 
     fn parse(rdata: &'a [u8], original: &'a [u8]) -> RDataResult<'a>;
@@ -74,18 +74,18 @@ impl<'a> RData<'a> {
     /// Parse an RR data and return RData enumeration
     pub fn parse(typ: Type, rdata: &'a [u8], original: &'a [u8]) -> RDataResult<'a> {
         match typ {
-            Type::A         => A::parse(rdata, original),
-            Type::AAAA      => Aaaa::parse(rdata, original),
-            Type::CNAME     => Cname::parse(rdata, original),
-            Type::DNAME     => Dname::parse(rdata, original),
-            Type::NS        => Ns::parse(rdata, original),
-            Type::MX        => Mx::parse(rdata, original),
-            Type::PTR       => Ptr::parse(rdata, original),
-            Type::SOA       => Soa::parse(rdata, original),
-            Type::SRV       => Srv::parse(rdata, original),
-            Type::TXT       => Txt::parse(rdata, original),
-            Type::SVC       => Svc::parse(rdata, original),
-            _               => Ok(RData::Unknown(typ, rdata)),
+            Type::A => A::parse(rdata, original),
+            Type::AAAA => Aaaa::parse(rdata, original),
+            Type::CNAME => Cname::parse(rdata, original),
+            Type::DNAME => Dname::parse(rdata, original),
+            Type::NS => Ns::parse(rdata, original),
+            Type::MX => Mx::parse(rdata, original),
+            Type::PTR => Ptr::parse(rdata, original),
+            Type::SOA => Soa::parse(rdata, original),
+            Type::SRV => Srv::parse(rdata, original),
+            Type::TXT => Txt::parse(rdata, original),
+            Type::SVC => Svc::parse(rdata, original),
+            _ => Ok(RData::Unknown(typ, rdata)),
         }
     }
 
@@ -94,17 +94,17 @@ impl<'a> RData<'a> {
     /// Code can be converted to an integer `packet.type_code() as isize`
     pub fn type_code(self) -> Type {
         match self {
-            RData::A(..)         => Type::A,
-            RData::AAAA(..)      => Type::AAAA,
-            RData::CNAME(..)     => Type::CNAME,
-            RData::DNAME(..)     => Type::DNAME,
-            RData::NS(..)        => Type::NS,
-            RData::MX(..)        => Type::MX,
-            RData::PTR(..)       => Type::PTR,
-            RData::SOA(..)       => Type::SOA,
-            RData::SRV(..)       => Type::SRV,
-            RData::TXT(..)       => Type::TXT,
-            RData::SVC(..)       => Type::SVC,
+            RData::A(..) => Type::A,
+            RData::AAAA(..) => Type::AAAA,
+            RData::CNAME(..) => Type::CNAME,
+            RData::DNAME(..) => Type::DNAME,
+            RData::NS(..) => Type::NS,
+            RData::MX(..) => Type::MX,
+            RData::PTR(..) => Type::PTR,
+            RData::SOA(..) => Type::SOA,
+            RData::SRV(..) => Type::SRV,
+            RData::TXT(..) => Type::TXT,
+            RData::SVC(..) => Type::SVC,
             RData::Unknown(t, _) => t,
         }
     }
