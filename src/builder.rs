@@ -97,6 +97,16 @@ impl Builder {
         self
     }
 
+    pub fn set_response_code(&mut self, code: ResponseCode) {
+        if self.buf.len() < 12 {
+            panic!("Header not written");
+        }
+        let mut flags = BigEndian::read_u16(&self.buf[2..4]);
+        flags &= !0x0F; // Clear response code bits
+        flags |= Into::<u8>::into(code) as u16; // Set new response code
+        BigEndian::write_u16(&mut self.buf[2..4], flags);
+    }
+
     fn write_name(&mut self, name: &str) {
         for part in name.split('.') {
             assert!(part.len() < 63);
